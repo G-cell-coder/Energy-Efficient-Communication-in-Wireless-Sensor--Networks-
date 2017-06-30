@@ -1,5 +1,5 @@
-// A C / C++ program for Prim's Minimum Spanning Tree (MST) algorithm.
-// The program is for adjacency matrix representation of the graph
+ /* C program for Prim's Minimum Spanning Tree (MST) algorithm */
+
  
 #include <stdio.h>
 #include <limits.h>
@@ -12,7 +12,7 @@
 #include <math.h>
 
 
-// Number of vertices in the graph
+
 #define V 20 
 #define TREE 1
 #define REQUEST 2
@@ -57,9 +57,9 @@ void sock_conn(int node_id, double graph[V][V])
 
     printf("My port is : %d\n", my_addr.port);
     if (!node_id) {
-        //find who are their nearest ppl and send the graph info to them one by one in the for loop
+        
         for (i = 0; i < V && neighbors[i]; i++) {
-            //TODO:separate the string in neighbors[i] into ip addr and port and fill up following
+            
             bzero(&cliaddr, sizeof(cliaddr));
             cliaddr.sin_family = AF_INET;
             cliaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -139,7 +139,7 @@ void sock_conn(int node_id, double graph[V][V])
                 continue;
             }
             for (i = 0; i < V && neighbors[i]; i++) {
-                // Dont send the request to my parent again to save power.
+                
                 if (neighbors[i]->id == my_parent) {
                     continue;
                 }
@@ -154,7 +154,7 @@ void sock_conn(int node_id, double graph[V][V])
                 span_sent = 1;
             }
         } else if (buff[0] == REPLY) {
-            //collect the children temperature
+            
             for (i = 0; i < V; i++) {
                 if (children_temp[i] != -1) 
                     continue;
@@ -170,7 +170,7 @@ void sock_conn(int node_id, double graph[V][V])
                 }
                     
                 if (node_id) {
-                    //send to parent
+                   
                     bzero(&cliaddr, sizeof(cliaddr));
                     cliaddr.sin_family = AF_INET;
                     cliaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -182,7 +182,7 @@ void sock_conn(int node_id, double graph[V][V])
                     printf("Sending spanning tree to port %d\n", neighbors[i]->port);
                     sendto(sockfd, buff, 1000, 0, (struct sockaddr *)&cliaddr, sizeof(cliaddr));
                 } else {
-                    // I am root node. Print temp.
+                   
                     printf("Average Temp : %d\n", (avg + (rand()%100))/2);
                 }
             }
@@ -194,11 +194,11 @@ void sock_conn(int node_id, double graph[V][V])
 
 int topologyfile_parser(int node_id, double graph[V][V]);
  
-// A utility function to find the vertex with minimum key value, from
-// the set of vertices not yet included in MST
+
+
 int minKey(int key[], bool mstSet[])
 {
-   // Initialize min value
+ 
    printf("...in minKey()\n");
    int min = INT_MAX, min_index;
    int v = 0;
@@ -210,7 +210,7 @@ int minKey(int key[], bool mstSet[])
    return min_index;
 }
  
-// A utility function to print the constructed MST stored in parent[]
+
 void printMST(int node_id, int *parent, int n, double graph[V][V])
 {
    
@@ -226,7 +226,7 @@ void printMST(int node_id, int *parent, int n, double graph[V][V])
        printf("Couldnt open topofile.txt\n");
        return;
    }
-   // printf( " child");
+   
    for (i = 1; i < V; i++) {
       printf("i : %d, parent[i] : %d\n", i, parent[i]);
       if ( parent[i] == node_id) {
@@ -237,51 +237,42 @@ void printMST(int node_id, int *parent, int n, double graph[V][V])
    }
 
    my_parent=parent[node_id];
-  /* for ( i= 1; i< V ; i++) {
-   if(parent[i]==i)
-   printf("child of %d is %d\n", parent [i] == i);
-   }*/
+ 
    fclose(fp);
  
 }
  
-// Function to construct and print MST for a graph represented using adjacency
-// matrix representation
+
 void primMST(int node_id,double graph[V][V])
 {
      printf("...in primMSTminKey()\n");
-     int key[V];   // Key values used to pick minimum weight edge in cut
-     bool mstSet[V];  // To represent set of vertices not yet included in MST
+     int key[V];   
+     bool mstSet[V];  
      int i = 0; 
-     // Initialize all keys as INFINITE
+     
      for (i = 0; i < V; i++) {
         key[i] = INT_MAX;
         mstSet[i] = false;
      }
  
-     // Always include first 1st vertex in MST.
-     key[0] = 0;     // Make key 0 so that this vertex is picked as first vertex
-     parents[0] = -1; // First node is always root of MST
+    
+     key[0] = 0;     
+     parents[0] = -1;
      int count = 0;
   
-     // The MST will have V vertices
+    
      for (count = 0; count < V-1; count++)
      {
-        // Pick thd minimum key vertex from the set of vertices
-        // not yet included in MST
+        
         int u = minKey(key, mstSet);
         int v = 0; 
-        // Add the picked vertex to the MST Set
+        
         mstSet[u] = true;
  
-        // Update key value and parent index of the adjacent vertices of
-        // the picked vertex. Consider only those vertices which are not yet
-        // included in 
+        
         for (v = 0; v < V; v++)
  
-           // graph[u][v] is non zero only for adjacent vertices of m
-           // mstSet[v] is false for vertices not yet included in MST
-           // Update the key only if graph[u][v] is smaller than key[v]
+           
           if (graph[u][v] && mstSet[v] == false && graph[u][v] <  key[v]) {
               parents[v]  = u;
               key[v] = graph[u][v];
@@ -289,7 +280,6 @@ void primMST(int node_id,double graph[V][V])
           }
      }
  
-     // print the constructed MST
      printMST(node_id, parents, V, graph);
 }
 
@@ -378,7 +368,7 @@ int topologyfile_parser(int my_id, double graph[V][V])
 
 }
 
-// Client side of socket programming 
+
 int main(int argc, const char* argv[])
 {
     int sockfd, i;
@@ -393,28 +383,7 @@ int main(int argc, const char* argv[])
         node_id = *argv[1] - 65;
     }
 
-    /*int graph[V][V] = {{0, 4.24, 4.47,4.47, 5, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {4.24, 0, 0, 0, 0,0,0,0,0,0,0,0,0,4.12,5,0,0,0},
-                      {4.47, 0, 0, 0, 0,0,4.12,5,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {4.47, 0, 0, 0, 0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,0},
-                      {5, 0, 0, 0, 0,5,0,0,0,0,4.12,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,0,5,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0},
-                      {0,0,4.12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,0,0,0,0,0,0,0,0,0,0,4.12,0,0,0,0,0.0},
-                      {0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                      {0,0,0,0,0,0,0,0,0,0,4.12,0,0,0,0,0,0,0,0,0},
-                      {0,4.12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4.12,0},
-                      {5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4.12,3.16,0,0},
-                      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4.12,0,0,0,0},
-                      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3.16,0,0,0,0},
-                      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,4.12,0,0,0,0,3},
-                      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3}
-                      };*/
-
+    
     topologyfile_parser(node_id, graph);
     if (node_id == 0) {
         // Print the solution
